@@ -163,6 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+
+
     // Initialize the date picker
     initializeDatePicker();
 
