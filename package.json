@@ -1,0 +1,19 @@
+{
+  "name": "calendar-date-range-picker",
+  "version": "1.0.0",
+  "description": "Modern calendar date range picker component with Kayak-style UX",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 3000 -o",
+    "dev": "npx http-server . -p 3000 -o -c-1"
+  },
+  "keywords": ["calendar", "date-picker", "date-range", "flatpickr"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "flatpickr": "^4.6.13"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+} 

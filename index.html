@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Date Range Picker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calendar Date Range Picker</h1>
+            <p>Click on the start date field, select a date, then select an end date to see the range selection in action.</p>
+        </header>
+
+        <main>
+            <div class="date-range-picker">
+                <div class="input-group">
+                    <label for="start-date">Start Date</label>
+                    <input 
+                        type="text" 
+                        id="start-date" 
+                        placeholder="Select start date" 
+                        readonly
+                        aria-label="Start date"
+                    />
+                </div>
+                
+                <div class="input-group">
+                    <label for="end-date">End Date</label>
+                    <input 
+                        type="text" 
+                        id="end-date" 
+                        placeholder="Select end date" 
+                        readonly
+                        aria-label="End date"
+                    />
+                </div>
+            </div>
+
+            <div class="selected-range" id="selected-range" aria-live="polite">
+                <strong>Selected Range:</strong> <span id="range-display">No range selected</span>
+            </div>
+
+            <div class="demo-actions">
+                <button id="clear-range" type="button">Clear Range</button>
+                <button id="preset-week" type="button">Last 7 Days</button>
+                <button id="preset-month" type="button">Last 30 Days</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
