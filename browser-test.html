@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Spinner Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #2C3948;
+            color: #B7BFC7;
+        }
+        .test-input {
+            margin: 10px 0;
+            padding: 5px;
+            font-size: 16px;
+        }
+        .method1::-webkit-outer-spin-button,
+        .method1::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            display: none;
+        }
+        .method1 {
+            -webkit-appearance: textfield;
+        }
+        .method2::-webkit-outer-spin-button,
+        .method2::-webkit-inner-spin-button {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .method3 {
+            -moz-appearance: textfield;
+        }
+        .method3::-webkit-outer-spin-button,
+        .method3::-webkit-inner-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Browser Spinner Test</h1>
+    <p>Testing different methods to hide number input spinners</p>
+    
+    <div>
+        <label>Normal number input (should have arrows):</label><br>
+        <input type="number" value="2024" class="test-input">
+    </div>
+    
+    <div>
+        <label>Method 1 - webkit-appearance none + display none:</label><br>
+        <input type="number" value="2024" class="test-input method1">
+    </div>
+    
+    <div>
+        <label>Method 2 - opacity 0 + width/height 0:</label><br>
+        <input type="number" value="2024" class="test-input method2">
+    </div>
+    
+    <div>
+        <label>Method 3 - moz-appearance textfield:</label><br>
+        <input type="number" value="2024" class="test-input method3">
+    </div>
+    
+    <div>
+        <label>Text input (no arrows possible):</label><br>
+        <input type="text" value="2024" class="test-input">
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <strong>Browser Info:</strong>
+        <div id="browser-info"></div>
+    </div>
+    
+    <script>
+        // Detect browser
+        const browserInfo = {
+            userAgent: navigator.userAgent,
+            vendor: navigator.vendor,
+            platform: navigator.platform,
+            language: navigator.language
+        };
+        
+        document.getElementById('browser-info').innerHTML = `
+            <div>User Agent: ${browserInfo.userAgent}</div>
+            <div>Vendor: ${browserInfo.vendor}</div>
+            <div>Platform: ${browserInfo.platform}</div>
+            <div>Language: ${browserInfo.language}</div>
+        `;
+        
+        // Test which method works
+        setTimeout(() => {
+            const methods = document.querySelectorAll('.test-input[type="number"]');
+            methods.forEach((input, index) => {
+                const computedStyle = window.getComputedStyle(input);
+                console.log(`Method ${index}: webkit-appearance = ${computedStyle.webkitAppearance}`);
+            });
+        }, 1000);
+    </script>
+</body>
+</html> 

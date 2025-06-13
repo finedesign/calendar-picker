@@ -16,7 +16,7 @@
 
 body {
   font-family: var(--font);
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: #090A0C;
   color: var(--clr-fg);
   margin: 0;
   padding: 20px;
@@ -174,7 +174,91 @@ header p {
   color: var(--clr-fg) !important;
 }
 
+/* Style year up/down arrows to match month dropdown arrow */
+.flatpickr-current-month .cur-year {
+  color: #B7BFC7 !important;
+}
 
+.flatpickr-current-month .cur-year:hover {
+  color: white !important;
+}
+
+/* Hide year arrows completely - comprehensive approach */
+/* Target the year input itself */
+.flatpickr-calendar .cur-year,
+.flatpickr-calendar input.cur-year,
+.flatpickr-current-month .cur-year,
+.flatpickr-current-month input.cur-year {
+  -webkit-appearance: textfield !important;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+/* Hide spinner buttons with multiple selectors */
+.flatpickr-calendar .cur-year::-webkit-outer-spin-button,
+.flatpickr-calendar .cur-year::-webkit-inner-spin-button,
+.flatpickr-calendar input.cur-year::-webkit-outer-spin-button,
+.flatpickr-calendar input.cur-year::-webkit-inner-spin-button,
+.flatpickr-current-month .cur-year::-webkit-outer-spin-button,
+.flatpickr-current-month .cur-year::-webkit-inner-spin-button,
+.flatpickr-current-month input.cur-year::-webkit-outer-spin-button,
+.flatpickr-current-month input.cur-year::-webkit-inner-spin-button,
+.flatpickr-calendar .flatpickr-current-month .cur-year::-webkit-outer-spin-button,
+.flatpickr-calendar .flatpickr-current-month .cur-year::-webkit-inner-spin-button,
+.flatpickr-calendar .flatpickr-current-month input.cur-year::-webkit-outer-spin-button,
+.flatpickr-calendar .flatpickr-current-month input.cur-year::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Nuclear option - target all number inputs in flatpickr */
+.flatpickr-calendar input[type="number"]::-webkit-outer-spin-button,
+.flatpickr-calendar input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+}
+
+/* Make the year input behave like text field */
+.flatpickr-calendar input[type="number"] {
+  -webkit-appearance: textfield !important;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+/* Additional class-based approach for year inputs */
+.no-spinners {
+  -webkit-appearance: textfield !important;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+.no-spinners::-webkit-outer-spin-button,
+.no-spinners::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+}
 
 .flatpickr-weekdays {
   background: var(--clr-bg) !important;

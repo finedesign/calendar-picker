@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const endInput = document.getElementById('end-date');
     const rangeDisplay = document.getElementById('range-display');
     const clearButton = document.getElementById('clear-range');
-    const presetWeekButton = document.getElementById('preset-week');
-    const presetMonthButton = document.getElementById('preset-month');
 
     let flatpickrInstance;
 
@@ -41,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 endInput.addEventListener('click', function() {
                     instance.open();
                 });
+                
+                // Hide year arrows when calendar is ready
+                hideYearArrows();
             },
             
             onOpen: function(selectedDates, dateStr, instance) {
@@ -48,29 +49,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 const calendar = instance.calendarContainer;
                 calendar.setAttribute('role', 'grid');
                 calendar.setAttribute('aria-label', 'Date range picker');
+                
+                // Hide year arrows after calendar opens
+                setTimeout(hideYearArrows, 50);
             }
         });
     }
 
     // Handle date selection changes
     function handleDateChange(selectedDates, dateStr) {
+        console.log('handleDateChange called:', {
+            selectedDatesLength: selectedDates.length,
+            dateStr,
+            dates: selectedDates.map(d => formatDate(d)),
+            isSettingPresetRange
+        });
+        
+        // Skip updates if we're setting a preset range to prevent flashing
+        if (isSettingPresetRange) {
+            console.log('Skipping update - preset range in progress');
+            return;
+        }
+        
         if (selectedDates.length === 0) {
             // No dates selected
             startInput.value = '';
             endInput.value = '';
             updateRangeDisplay();
+            console.log('Cleared both inputs');
         } else if (selectedDates.length === 1) {
             // Only start date selected
             const startDate = selectedDates[0];
             startInput.value = formatDate(startDate);
             endInput.value = '';
             updateRangeDisplay(startDate);
+            console.log('Set start date only:', formatDate(startDate));
         } else if (selectedDates.length === 2) {
             // Both dates selected - complete range
             const [startDate, endDate] = selectedDates;
             startInput.value = formatDate(startDate);
             endInput.value = formatDate(endDate);
             updateRangeDisplay(startDate, endDate);
+            console.log('Set both dates - Start:', formatDate(startDate), 'End:', formatDate(endDate));
             
             // Close calendar after complete selection
             setTimeout(() => {
@@ -106,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Format date for user-friendly display
     function formatDisplayDate(date) {
         return date.toLocaleDateString('en-US', {
+            weekday: 'short',
             year: 'numeric',
             month: 'short',
             day: 'numeric'
@@ -122,26 +143,103 @@ document.addEventListener('DOMContentLoaded', function() {
         updateRangeDisplay();
     }
 
-    // Preset range functions
+    // Flag to prevent flashing during preset range setting
+    let isSettingPresetRange = false;
+
+    // Helper function to get next Sunday
+    function getNextSunday() {
+        const today = new Date();
+        const daysUntilSunday = (7 - today.getDay()) % 7;
+        const nextSunday = new Date(today);
+        
+        // If today is Sunday, get next Sunday (7 days from now)
+        if (daysUntilSunday === 0) {
+            nextSunday.setDate(today.getDate() + 7);
+        } else {
+            nextSunday.setDate(today.getDate() + daysUntilSunday);
+        }
+        
+        return nextSunday;
+    }
+
+    // Week range functions (starting from next Sunday)
+    function setWeekRange(weeks) {
+        const startDate = getNextSunday();
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + (weeks * 7) - 1); // -1 because we want inclusive range
+        
+        console.log('Setting week range:', {
+            weeks,
+            startDate: formatDate(startDate),
+            endDate: formatDate(endDate)
+        });
+        
+        if (flatpickrInstance) {
+            // Set flag to prevent intermediate updates
+            isSettingPresetRange = true;
+            
+            // Set the date range in Flatpickr (this will trigger onChange events)
+            flatpickrInstance.setDate([startDate, endDate]);
+            
+            // Immediately set the final values to prevent flashing
+            startInput.value = formatDate(startDate);
+            endInput.value = formatDate(endDate);
+            updateRangeDisplay(startDate, endDate);
+            
+            // Clear the flag after a short delay
+            setTimeout(() => {
+                isSettingPresetRange = false;
+            }, 50);
+            
+            console.log('Set week range - Start:', startInput.value, 'End:', endInput.value);
+        }
+    }
+
+    // Legacy preset range function (keeping for compatibility)
     function setPresetRange(days) {
         const endDate = new Date();
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - days + 1);
         
+        console.log('Setting preset range:', {
+            days,
+            startDate: formatDate(startDate),
+            endDate: formatDate(endDate)
+        });
+        
         if (flatpickrInstance) {
+            // Set flag to prevent intermediate updates
+            isSettingPresetRange = true;
+            
+            // Set the date range in Flatpickr (this will trigger onChange events)
             flatpickrInstance.setDate([startDate, endDate]);
+            
+            // Immediately set the final values to prevent flashing
+            startInput.value = formatDate(startDate);
+            endInput.value = formatDate(endDate);
+            updateRangeDisplay(startDate, endDate);
+            
+            // Clear the flag after a short delay
+            setTimeout(() => {
+                isSettingPresetRange = false;
+            }, 50);
+            
+            console.log('Set preset range - Start:', startInput.value, 'End:', endInput.value);
         }
     }
 
     // Event listeners for demo buttons
     clearButton.addEventListener('click', clearRange);
     
-    presetWeekButton.addEventListener('click', function() {
-        setPresetRange(7);
+    const preset4WeekButton = document.getElementById('preset-4week');
+    const preset12WeekButton = document.getElementById('preset-12week');
+    
+    preset4WeekButton.addEventListener('click', function() {
+        setWeekRange(4);
     });
     
-    presetMonthButton.addEventListener('click', function() {
-        setPresetRange(30);
+    preset12WeekButton.addEventListener('click', function() {
+        setWeekRange(12);
     });
 
     // Keyboard accessibility improvements
@@ -188,4 +286,48 @@ document.addEventListener('DOMContentLoaded', function() {
             logDateRangeSelected(selectedDates[0], selectedDates[1]);
         }
     };
+
+    // FINAL NUCLEAR APPROACH - CHANGE INPUT TYPE TO TEXT
+    function hideYearArrows() {
+        console.log('hideYearArrows called - NUCLEAR APPROACH');
+        const calendar = document.querySelector('.flatpickr-calendar');
+        if (!calendar) {
+            console.log('No calendar found');
+            return;
+        }
+        
+        const yearInput = calendar.querySelector('.cur-year');
+        if (!yearInput) {
+            console.log('No year input found');
+            return;
+        }
+        
+        console.log('BEFORE - Input type:', yearInput.type, 'Value:', yearInput.value);
+        
+        // NUCLEAR: Change input type to text (removes ALL possibility of spinners)
+        const currentValue = yearInput.value;
+        yearInput.type = 'text';
+        yearInput.value = currentValue;
+        
+        // Add validation to maintain number-only behavior
+        yearInput.addEventListener('input', function(e) {
+            // Only allow digits
+            this.value = this.value.replace(/[^0-9]/g, '');
+            // Limit to 4 digits
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+        });
+        
+        yearInput.addEventListener('blur', function(e) {
+            const year = parseInt(this.value);
+            const currentYear = new Date().getFullYear();
+            if (isNaN(year) || year < 1900 || year > currentYear + 100) {
+                this.value = currentYear;
+            }
+        });
+        
+        console.log('AFTER - Input type:', yearInput.type, 'Value:', yearInput.value);
+        console.log('✅ NUCLEAR SUCCESS: Changed input type to text - NO SPINNERS POSSIBLE!');
+    }
 }); 
